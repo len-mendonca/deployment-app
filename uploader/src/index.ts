@@ -6,7 +6,11 @@ import { getAllFiles } from "./utils/file";
 import path from "path";
 import dotenv from "dotenv";
 import { uploadFile } from "./utils/aws";
+import { createClient } from "redis";
 dotenv.config();
+
+const uploader = createClient();
+uploader.connect();
 
 const app = express();
 
@@ -24,8 +28,12 @@ app.post("/deploy", async (req, res) => {
     await simpleGit().clone(repoUrl, path.join(__dirname, `./output/${id}`));
     const allFiles = getAllFiles(path.join(__dirname, `./output/${id}`));
     allFiles.forEach(async (file) => {
-      await uploadFile(file.slice(__dirname.length + 1), file);
+      const relativePath = file.slice(__dirname.length + 1);
+      const insertRelativePath = relativePath.replace(/\\/g, "/");
+
+      await uploadFile(insertRelativePath, file);
     });
+    uploader.lPush("build-queue", id);
     return res.status(200).json({ id });
   } catch (error) {
     console.log(error);

@@ -26,6 +26,7 @@ app.post("/deploy", async (req, res) => {
     allFiles.forEach(async (file) => {
       await uploadFile(file.slice(__dirname.length + 1), file);
     });
+    return res.status(200).json({ id });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Failed to clone repository" });

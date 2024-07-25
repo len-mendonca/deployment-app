@@ -14,7 +14,9 @@
   "description": "",
   "dependencies": {
     "async-mutex": "^0.5.0",
+    "aws-sdk": "^2.1663.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "simple-git": "^3.25.0"
   },

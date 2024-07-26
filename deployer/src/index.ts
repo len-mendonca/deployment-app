@@ -1,6 +1,7 @@
 import { commandOptions, createClient } from "redis";
-import { downloadS3Folder } from "./utils/aws";
+import { copyFinalDist, downloadS3Folder } from "./utils/aws";
 import dotenv from "dotenv";
+import { buildProject } from "./utils/projectBuilder";
 dotenv.config();
 
 const deployer = createClient();
@@ -14,7 +15,11 @@ async function main() {
       0
     );
 
-    await downloadS3Folder(`output/${response?.element}`);
+    const id = response?.element as string;
+
+    await downloadS3Folder(`output/${id}`);
+    await buildProject(id);
+    copyFinalDist(id);
   }
 }
 main();
